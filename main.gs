@@ -18,7 +18,7 @@ function reg(str) {
     let listMatches = str.toString().match(/[А-Я][а-я]+ [А-Яа-я. \n]+\d+\.\d+-\d+/g);
     if (listMatches != null) {
         for (let i = 0; i < listMatches.length; ++i) {
-            let nameSurname = listMatches[i].match(/[А-Я][а-я]+/g);
+            let nameSurname = listMatches[i].match(/[А-Я][а-я]+/g).join('');
             let auditory = listMatches[i].match(/\d+/g).join('');
             result.push(new Pair(nameSurname, auditory));
         }
@@ -32,29 +32,30 @@ function reg(str) {
 }
 
 function onEdit(e) {
-    var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
-    var activeSheet = SpreadsheetApp.getActiveSheet();
-    var activeCell = activeSheet.getActiveCell();
+    let sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+    let activeSheet = SpreadsheetApp.getActiveSheet();
+    let activeCell = activeSheet.getActiveCell();
     let errorMessageCell = "B8";
 
     for (let i = 0; i < sheets.length; ++i) {
         if (sheets[i].getName() === activeSheet.getName())
             continue;
-        var anotherSheetCellVal = sheets[i].getRange(activeCell.getRow(), activeCell.getColumn()).getValue().toString();
-        var currentSheetCellVal = activeCell.getValue().toString();
+        let anotherSheetCellVal = sheets[i].getRange(activeCell.getRow(), activeCell.getColumn()).getValue().toString();
+        let currentSheetCellVal = activeCell.getValue().toString();
 
         let c_regList_1 = reg(currentSheetCellVal);
         let a_regList_2 = reg(anotherSheetCellVal);
-        for (let i = 0; i < c_regList_1.length; ++i) {
-            for (let j = 0; j < a_regList_2.length; ++j) {
-                if (c_regList_1[i]._second() == a_regList_2[j]._second()) {
+        for (let c = 0; c < c_regList_1.length; ++c) {
+            for (let a = 0; a < a_regList_2.length; ++a) {
+                if (c_regList_1[c]._second() == a_regList_2[a]._second() &&
+                    c_regList_1[c]._first() != a_regList_2[a]._first()) {
                     activeSheet.getRange(errorMessageCell).setValue(
-                        "Error! Conflict with " + a_regList_2[j]._first() + " at list " + sheets[i].getName() + ":" + activeCell.getA1Notation()
+                        "Error! Conflict with " + a_regList_2[a]._first() + " at list " + sheets[i].getName() + ":" + activeCell.getA1Notation()
                     ).setBackgroundRGB(236, 14, 14);
                     return;
                 }
             }
         }
-        SpreadsheetApp.getActiveSheet().getRange(errorMessageCell).setValue(" ").setBackgroundRGB(31, 194, 68);
     }
+    SpreadsheetApp.getActiveSheet().getRange(errorMessageCell).setValue(" ").setBackgroundRGB(31, 194, 68);
 }
