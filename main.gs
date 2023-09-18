@@ -45,6 +45,8 @@ function onEdit(e) {
 
         let c_regList_1 = reg(currentSheetCellVal);
         let a_regList_2 = reg(anotherSheetCellVal);
+        Logger.log(c_regList_1);
+        Logger.log(a_regList_2);
         for (let c = 0; c < c_regList_1.length; ++c) {
             for (let a = 0; a < a_regList_2.length; ++a) {
                 if (c_regList_1[c]._second() == a_regList_2[a]._second() &&
@@ -56,6 +58,7 @@ function onEdit(e) {
                 }
             }
         }
+        Logger.log('');
     }
     SpreadsheetApp.getActiveSheet().getRange(errorMessageCell).setValue(" ").setBackgroundRGB(31, 194, 68);
 }
